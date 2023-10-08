@@ -19,6 +19,7 @@ type OrderService interface {
 	CreateOrder(newOrderRequest dto.NewOrderRequest) (*dto.NewOrderResponse, errs.Error)
 	GetOrders() (*dto.GetOrdersResponse, errs.Error)
 	UpdateOrder(orderId int, newOrderRequest dto.NewOrderRequest) (*dto.NewOrderResponse, errs.Error)
+	DeleteOrder(orderId int) (*dto.NewOrderResponse, errs.Error)
 }
 
 func NewOrderService(orderRepo order_repository.Repository, itemRepo item_repository.Repository) OrderService {
@@ -184,4 +185,27 @@ func (os *orderService) CreateOrder(newOrderRequest dto.NewOrderRequest) (*dto.N
 
 	return &response, nil
 
+}
+
+func (os *orderService) DeleteOrder(orderId int) (*dto.NewOrderResponse, errs.Error) {
+
+	_, err := os.OrderRepo.ReadOrderById(orderId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = os.OrderRepo.DeleteOrder(orderId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	response := dto.NewOrderResponse{
+		StatusCode: http.StatusOK,
+		Message:    "order successfully deleted",
+		Data:       nil,
+	}
+
+	return &response, nil
 }

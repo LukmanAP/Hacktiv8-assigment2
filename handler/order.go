@@ -98,3 +98,16 @@ func (oh *orderHandler) UpdateOrder(ctx *gin.Context) {
 
 	ctx.JSON(response.StatusCode, response)
 }
+
+func (oh *orderHandler) DeleteOrder(ctx *gin.Context) {
+	var orderId, _ = strconv.Atoi(ctx.Param("orderId"))
+
+	response, err := oh.OrderService.DeleteOrder(orderId)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(err.Status(), errs.NewNotFoundError("Order ID Not Found"))
+		return
+	}
+
+	ctx.JSON(response.StatusCode, response)
+}
